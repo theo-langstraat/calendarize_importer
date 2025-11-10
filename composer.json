@@ -1,0 +1,33 @@
+{
+    "name": "theolangstraat/calendarize-importer",
+    "description": "Import events from Excel using calendarize",
+    "type": "typo3-cms-extension",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "Theo Langstraat",
+            "email": "theo.langstraat@delta.nl"
+        }
+    ],
+    "require": {
+        "typo3/cms-core": "^13.4",
+        "PhpOffice/PhpSpreadsheet": "^5.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Theolangstraat\\CalendarizeImporter\\": "Classes/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "typo3/class-alias-loader": true,
+            "typo3/cms-composer-installers": true
+        },
+        "sort-packages": true
+    },
+    "extra": {
+        "typo3/cms": {
+            "extension-key": "calendarize_importer"
+        }
+    }
+}
