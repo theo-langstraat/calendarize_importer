@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Theolangstraat\CalendarizeImporter\Service;
 
@@ -17,7 +17,7 @@ class EventDataHandlerService
             $timeString = trim($timeString); // verwijdert spaties links en rechts
             $time = DateTime::createFromFormat('H.i', $timeString);
             if (!$time) {
-                throw new \InvalidArgumentException("Ongeldige tijdnotatie: {$timeString}");
+                throw new \InvalidArgumentException("Invalid time format: {$timeString}");
             }
             return ((int)$time->format('H') * 3600) + ((int)$time->format('i') * 60);
         }
@@ -26,14 +26,14 @@ class EventDataHandlerService
     {
         Bootstrap::initializeBackendAuthentication();
 
-        // Bepaal een stabiele import-id gebaseerd op jouw bron
-        $importId = 'mijnbron:' . $eventData['external_uid'];
+        // Determine a stable import ID based on your source
+        $importId = 'external_source:' . $eventData['external_uid'];
 
         // DB-connection
         $connection = GeneralUtility::makeInstance(ConnectionPool::class)
             ->getConnectionForTable('tx_calendarize_domain_model_event');
 
-        // Zoek bestaand event op import_id
+        // Search for existing event by import_id
         $qb = $connection->createQueryBuilder();
         $existingEventUid = $qb
             ->select('uid')
@@ -43,7 +43,7 @@ class EventDataHandlerService
             ->executeQuery()
             ->fetchOne();
 
-        // Zoek bestaande configuration op import_id
+        // Search existing configuration by import_id
         $connectionConfig = GeneralUtility::makeInstance(ConnectionPool::class)
             ->getConnectionForTable('tx_calendarize_domain_model_configuration');
         $qb2 = $connectionConfig->createQueryBuilder();
@@ -65,7 +65,7 @@ class EventDataHandlerService
             throw new \InvalidArgumentException("Verplichte velden ontbreken: title of start_date external_uid: {$importId}");
         }
 
-        // Data voor DataHandler
+        // Data for DataHandler
         $data = [
             'tx_calendarize_domain_model_configuration' => [
                 $configKey => [
@@ -87,7 +87,7 @@ class EventDataHandlerService
                     'abstract' => $eventData['abstract'],
                     'description' => $eventData['description'],
                     'location' => $eventData['location'],
-                    // IRRE link: als configKey numeric is gebruik dat uid; anders geef NEW-key door
+                    // IRRE link: if configKey is numeric, use that uid; otherwise, pass NEW-key
                     'calendarize' => $configKey,  // IRRE: tx_calendarize_domain_model_configuration
                     'import_id' => $importId,
                     'categories' => $eventData['cat_id'] . ', 7',

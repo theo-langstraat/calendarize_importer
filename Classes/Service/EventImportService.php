@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Theolangstraat\CalendarizeImporter\Service;
 
@@ -31,7 +31,7 @@ class EventImportService
         $startRow = (int) preg_replace('/[A-Z]/', '', $startCell);
         $endRow = (int) preg_replace('/[A-Z]/', '', $endCell);
 
-        // Kolomnamen ophalen en normaliseren
+        // Retrieve and normalize column names
         $columns = [];
         foreach (range($startCol, $endCol) as $col) {
             $key = $sheet->getCell($col . $startRow)->getValue();
@@ -48,14 +48,14 @@ class EventImportService
                 $rowData[$key] = $value;
             }
 
-            // Datumconversie
+            // Date conversion
             if (isset($rowData['start_date']) && is_numeric($rowData['start_date'])) {
                 $rowData['start_date'] = Date::excelToDateTimeObject($rowData['start_date'])->format('d-m-Y');
             } else {
                 $rowData['start_date'] = '';
             }
 
-            // Mapping naar verwachte velden
+            // Mapping to expected fields
             $expectedFields = [
                 'external_uid', 'start_date', 'start_time', 'title', 'abstract', 'description',
                 'location', 'categories', 'cat_id', 'pid', 'fe_groups', 'fe_group'
@@ -109,10 +109,8 @@ class EventImportService
 
         }
 
-        // $progressBar->finish(); // geeft deprecated foutmelding?? Zorgt dat 100% verschijnt
+        // $progressBar->finish(); // gives deprecated error message?? Makes sure 100% appears
 
         return $count;
     }
-
 }
-
